@@ -3,25 +3,55 @@
 > Ranked by our prime directive: **minimal effort, maximal outcome.** 🟢 = high value / low effort,
 > 🔵 = nice, ⚪ = stretch. Hardware ceiling = Arduino Starter Kit + a laptop + the provided screen.
 
-## A. Free browser quantum games (PC corner) — zero build 🟢
+## A. Quantum games for the screen corner — curated catalog 🟢
 
-Use one or two of these on the provided screen for 2-player play and to absorb the queue.
-**Test offline first** — confirm each works without guest Wi-Fi (download/cache or run locally).
+A broader, vetted shortlist drawn from the **Awesome Quantum Games** master list
+(https://github.com/HuangJunye/Awesome-Quantum-Games) — not just Tic-Tac-Toe. Tagged by
+audience and whether it's truly **browser-ready** (drop-in) vs **needs a build/download**.
+**Golden rule: test every pick live AND offline during prep** (TODO §2). Many quantum games are
+hackathon prototypes — links rot, and some old hosts (e.g. IBM Bluemix) are retired.
 
-| Game | Why it fits | Link |
+### A1. Top picks — on-theme, browser, drop-in 🟢
+
+| Game | Audience | Why it's a top pick | Link |
+|---|---|---|---|
+| **Quantum Game / Virtual Lab** (Quantum Flytrap, P. Migdał et al.) | all ages, staff-driven | **Our single best thematic match** — drag lasers/photons, see superposition & **measurement** of light. It *is* the "light becomes information" idea our Arduino station teaches. Real QM underneath. | https://quantumgame.io · https://lab.quantumflytrap.com |
+| **Quantum Tic-Tac-Toe** | 8+, 2-player | Easy pick-up-and-play; superposition + collapse with almost no text. Our default 2-player game. | https://tiqtaqtoe.com · https://quantum-ttt.com · https://vickynititi.itch.io/quantum-tic-tac-toe |
+| **Quantum Moves 2** (ScienceAtHome) | all ages | "Slosh" a quantum atom into place — pure visual intuition, no reading needed, satisfying in 30 s. Citizen-science pedigree. | https://www.scienceathome.org/games/quantum-moves-2/ |
+
+### A2. For older kids, teens, parents & the chess crowd 🔵
+
+| Game | Notes | Link |
 |---|---|---|
-| **Quantum Tic-Tac-Toe** (everthemore / "TiqTaqToe") | Pavel's reference; "turn up the quantumness", 2-player, intuitive superposition | https://everthemore.itch.io/tiqtaqtoe · https://tiqtaqtoe.com/ |
-| **Quantum Tic-Tac-Toe** (quantum-ttt.com) | Clean browser version, 2-player or vs AI; entanglement + measurement | https://quantum-ttt.com/ |
-| **Quantum Tic-Tac-Toe** (V. Sánchez Muñoz) | Has an "instructor" mode with less text / more visuals — good for kids | https://vickynititi.itch.io/quantum-tic-tac-toe |
-| **TiqTaqToe @ QPlayLearn** | Curated educational framing, age-friendly | https://qplaylearn.com/game-tiqtaqtoe |
-| **Quantum Flytrap Virtual Lab / Photonic Trail** | Drag-and-drop photons, light → measurement; ties directly to our "light becomes a bit" story | https://qplaylearn.com (Photonic Trail) |
-| **Awesome Quantum Games** (curated list) | Backup source if we want more options | https://github.com/HuangJunye/Awesome-Quantum-Games |
+| **Q-Chess — quantum chess online** | Browser, play a "Baby Robot" or a human, no install. Split/merge moves put a piece in **superposition** across squares until observed. Longer per turn → best for teens/adults, not 6-year-olds. | https://q-chess.com |
+| **Quantum Chess** (C. Cantwell — the Paul Rudd vs Hawking one) | The famous polished version, but it's a **paid desktop game (Steam)**, not browser. Reference/“did you know” talking point, not a stand activity. | https://store.steampowered.com/app/453870/ |
+| **Hello Quantum** (IBM) | Qubit-logic puzzle. ⚠️ Original Bluemix host is likely **dead** — verify a working mirror before relying on it. | (search “Hello Quantum IBM” for current host) |
 
-**Recommendation:** default to **one** Quantum Tic-Tac-Toe (2-player, low-text) as the headline
-game, with the Quantum Flytrap photon lab as a "wow" demo a staffer drives. Don't overload the corner.
+### A3. Younger kids & “true randomness” tie-ins 🔵
 
-> ⚠️ Verify each link + offline behaviour during prep (TODO §2). Itch.io games may need a download
-> to run offline. Have a fully-offline fallback ready (e.g. a downloaded HTML build).
+| Game / app | Notes | Link |
+|---|---|---|
+| **Quantum Cats** (IQC, U. Waterloo) | Kid-friendly “rescue the kittens with spooky quantum laws.” Verify it still runs in-browser. | http://quantumcats.ca |
+| **Universe Splitter** | Uses a **real** quantum device (single-photon split) to make a decision — a lovely, honest demo of *genuine* quantum randomness vs our *simulated* Level-3 noise. Phone app, not browser; could run on a staffer’s phone. | http://cheapuniverses.com/universesplitter/ |
+| **Quantum Grove** (browser) | Ambient, browser-playable art piece — better as an **idle/attract visual** on the screen than an active game. | https://quantum-kittens.itch.io/quantum-grove |
+
+### A4. Fun but **needs a build/download** — only if we want to invest ⚪
+
+From the Awesome list, mostly GitHub/itch hackathon projects (not drop-in browser): **QPong**
+(quantum Pong), **Quantum Cat-sweeper** (Minesweeper), **Schrödinger's Cat** (superposition/gates),
+**Quantum Othello**, **QTetris**, **FlappyQat**, **Hunt the Quantpus**. Treat as stretch — each needs
+setup/testing we probably can't justify for a 4-hour stand.
+
+### Recommendation (don't overload the corner)
+
+Run **two** things on the screen: the **Quantum Flytrap photon game** as the headline — because it
+literally mirrors our Arduino "light → bit → measurement" story — and **Quantum Tic-Tac-Toe** as the
+easy 2-player pick-up game. Keep **Q-Chess** bookmarked for chess-savvy older visitors, and have the
+**Universe Splitter** phone app ready as the "this one uses a *real* quantum device" punchline that
+ties straight into our honesty note (our Level 3 is an analogy, not a true quantum RNG).
+
+> ⚠️ Verify each link is **live + works offline** during prep (TODO §2). Have a fully-offline
+> fallback ready (a downloaded HTML build of Tic-Tac-Toe) in case there's no guest Wi-Fi.
 
 ## B. Engagement polish for the Arduino demo 🔵
 

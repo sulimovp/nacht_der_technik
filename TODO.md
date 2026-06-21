@@ -28,8 +28,10 @@ This is the single most important milestone. Get an end-to-end working demo on P
 
 Zero build — absorbs the queue and gives a 2-player option.
 
-- [ ] Pick 1–2 games from `docs/ideas-backlog.md` (default: Quantum Tic-Tac-Toe) — *(P+CL)*
-- [ ] Test on the actual screen resolution; check they work **offline** if no guest Wi-Fi — *(P)*
+- [ ] Pick 2 games from `docs/ideas-backlog.md` §A (default: **Quantum Flytrap photon game** as the
+      on-theme headline + **Quantum Tic-Tac-Toe** as the 2-player pick-up; Q-Chess for older visitors) — *(P+CL)*
+- [ ] Verify each chosen game is **live** (links rot — many are old hackathon prototypes) and works
+      **offline** if there's no guest Wi-Fi; keep a downloaded HTML fallback — *(P)*
 - [ ] Make a 1-page "how to play" card (German, kid-simple) for the screen corner — *(AI)*
 - [ ] Decide browser kiosk/fullscreen setup so kids can't wander off the page — *(P/AI)*
 
