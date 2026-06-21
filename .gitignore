@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+
+# Arduino build artifacts
+build/
+*.hex
+*.elf
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editors
+.vscode/
+.idea/
+
+# Scratch / exports (keep source templates, ignore generated posters)
+exports/
+*.tmp
