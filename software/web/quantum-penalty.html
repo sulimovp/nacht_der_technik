@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Quanten-Elfmeter · Hack the Quantum</title>
+<style>
+  :root{--bg1:#0a1733;--bg2:#061f3d;--ink:#eef3fb;--dim:#9fb2cc;--teal:#34d3b0;
+    --grass:#1f8f4e;--grass2:#176b3b;--win:#2ecc71;--lose:#ff5a5a;--violet:#9b6dff;}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;height:100%}
+  body{font-family:Arial,Helvetica,sans-serif;color:var(--ink);
+    background:radial-gradient(120% 120% at 50% 0%,var(--bg2),var(--bg1));
+    min-height:100dvh;display:flex;flex-direction:column;align-items:center;
+    padding:env(safe-area-inset-top) 12px env(safe-area-inset-bottom);}
+  .nav{width:100%;max-width:560px;display:flex;align-items:center;gap:8px;padding:10px 0 0}
+  .back{background:rgba(255,255,255,.1);color:var(--ink);border:none;border-radius:12px;
+    padding:9px 14px;font-weight:700;font-size:14px;cursor:pointer;text-decoration:none}
+  .nav h1{margin:0 auto;font-size:clamp(18px,5.2vw,26px)}
+  .nav h1 .q{color:var(--teal)}
+  .scorebar{width:100%;max-width:560px;display:flex;justify-content:space-between;
+    color:var(--dim);font-size:15px;margin:8px 2px}
+  .scorebar b{color:var(--ink);font-size:20px}
+  .pitch{width:100%;max-width:560px;aspect-ratio:5/4;border-radius:16px;position:relative;overflow:hidden;
+    background:linear-gradient(180deg,#2aa15a,var(--grass) 55%,var(--grass2));}
+  .goal{position:absolute;left:6%;right:6%;top:7%;height:34%;border:6px solid #f3f6ff;border-bottom:none;
+    border-radius:6px 6px 0 0;background:rgba(255,255,255,.06)}
+  .net{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.18) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.18) 1px,transparent 1px);background-size:14px 14px}
+  .keeper{position:absolute;top:46%;left:50%;width:46px;height:60px;border-radius:14px;
+    background:#ffd23f;transform:translateX(-50%);transition:left .45s cubic-bezier(.2,.8,.2,1),transform .45s;
+    box-shadow:0 6px 14px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;font-size:30px}
+  .ball{position:absolute;bottom:7%;left:50%;width:38px;height:38px;border-radius:50%;
+    background:radial-gradient(circle at 35% 30%,#fff,#cfd6e0);font-size:30px;text-align:center;line-height:38px;
+    transform:translateX(-50%);transition:left .5s ease-in,bottom .5s ease-in,opacity .3s}
+  .ghost{position:absolute;bottom:7%;width:34px;height:34px;border-radius:50%;background:rgba(155,109,255,.55);
+    transform:translateX(-50%);transition:left .4s,opacity .4s;opacity:0}
+  .flash{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    font-size:clamp(40px,12vw,70px);font-weight:800;opacity:0;transition:opacity .15s;pointer-events:none}
+  .flash.goal{color:var(--win)} .flash.save{color:var(--lose)}
+  .flash.show{opacity:1}
+  .pills{width:100%;max-width:560px;display:flex;gap:8px;margin:10px 0 4px}
+  .pill{flex:1;border:none;border-radius:14px;padding:18px 6px;font-weight:800;font-size:17px;color:#04243f;
+    background:linear-gradient(180deg,#eaf0ff,#c6d4ff);cursor:pointer;box-shadow:0 5px 0 #8aa0d8}
+  .pill:active{transform:translateY(4px);box-shadow:0 1px 0 #8aa0d8}
+  .qrow{width:100%;max-width:560px;display:flex;gap:8px;margin-bottom:8px}
+  .qbtn{flex:2;border:none;border-radius:14px;padding:14px;font-weight:800;font-size:16px;color:#fff;cursor:pointer;
+    background:linear-gradient(180deg,#b18cff,var(--violet));box-shadow:0 5px 0 #6f49c4}
+  .qbtn:active{transform:translateY(4px);box-shadow:0 1px 0 #6f49c4}
+  .qbtn.armed{outline:3px solid #fff}
+  .motion{flex:1;border:none;border-radius:14px;background:rgba(255,255,255,.1);color:var(--ink);
+    font-weight:700;font-size:13px;cursor:pointer}
+  .hint{width:100%;max-width:560px;text-align:center;color:var(--dim);font-size:13px;min-height:18px}
+  .foot{color:var(--dim);font-size:12px;padding:6px 0 12px;text-align:center}
+  /* overlay */
+  .overlay{position:fixed;inset:0;background:rgba(4,12,28,.95);display:none;flex-direction:column;
+    align-items:center;justify-content:center;text-align:center;padding:22px;z-index:9;overflow:auto}
+  .overlay.show{display:flex}
+  .overlay h2{font-size:clamp(26px,8vw,40px);margin:0}
+  .overlay .big{font-size:clamp(44px,14vw,68px);font-weight:800;margin:4px 0}
+  .overlay p{color:var(--ink);font-size:clamp(14px,4.2vw,18px);max-width:460px;line-height:1.5;margin:6px 0}
+  .lb{width:100%;max-width:380px;margin:10px auto;text-align:left;font-size:15px}
+  .lb .row{display:flex;justify-content:space-between;padding:6px 10px;border-radius:8px}
+  .lb .row:nth-child(odd){background:rgba(255,255,255,.06)}
+  .lb .row.me{background:rgba(52,211,176,.25);font-weight:800}
+  .namebox{display:flex;gap:8px;margin:10px auto;max-width:380px}
+  .namebox input{flex:1;border-radius:12px;border:none;padding:14px;font-size:16px}
+  .namebox button,.again{border:none;border-radius:12px;background:var(--teal);color:#04243f;font-weight:800;
+    font-size:16px;padding:14px 18px;cursor:pointer}
+  .again{margin-top:14px;background:#fff}
+  .gift{display:none;margin-top:8px;background:linear-gradient(180deg,#ffe79a,#f5c542);color:#3a2a00;
+    border-radius:14px;padding:12px 16px;font-weight:800}
+  .gift.show{display:block}
+  a.lnk{color:var(--teal)}
+</style>
+</head>
+<body>
+  <div class="nav">
+    <a class="back" href="index.html">‹ Menü</a>
+    <h1>Quanten-<span class="q">Elfmeter</span></h1>
+  </div>
+  <div class="scorebar">
+    <span>Tor: <b id="goals">0</b></span>
+    <span id="shotn">Schuss 1 / 10</span>
+    <span>Parade: <b id="saves">0</b></span>
+  </div>
+
+  <div class="pitch" id="pitch">
+    <div class="goal"><div class="net"></div></div>
+    <div class="keeper" id="keeper">🧤</div>
+    <div class="ghost" id="ghostL"></div>
+    <div class="ghost" id="ghostR"></div>
+    <div class="ball" id="ball">⚽</div>
+    <div class="flash" id="flash"></div>
+  </div>
+
+  <div class="pills">
+    <button class="pill" data-d="0">⟵ Links</button>
+    <button class="pill" data-d="1">Mitte</button>
+    <button class="pill" data-d="2">Rechts ⟶</button>
+  </div>
+  <div class="qrow">
+    <button class="qbtn" id="qbtn">⚛ Quantenschuss (Links + Rechts)</button>
+    <button class="motion" id="motionBtn">📱 Bewegung</button>
+  </div>
+  <div class="hint" id="hint">Wähle eine Ecke – oder wische / kippe das Handy. Der Torhüter errät dein Muster!</div>
+  <div class="foot">Hack the Quantum · ZHAW Institut InIT</div>
+
+  <div class="overlay" id="overlay">
+    <h2 id="endTitle">Schlusspfiff!</h2>
+    <div class="big" id="endScore"></div>
+    <p id="endMsg"></p>
+    <div class="namebox" id="namebox">
+      <input id="name" maxlength="12" placeholder="Dein Name" autocomplete="off">
+      <button id="submit">Eintragen</button>
+    </div>
+    <div class="lb" id="lb"></div>
+    <div class="gift" id="gift">🍬 Stark! Zeig das dem Standteam für ein <b>Quanten-Geschenk</b>!</div>
+    <button class="again" id="again">Nochmal schiessen</button>
+  </div>
+
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+
+/* ---------- leaderboard client (shared online + local fallback) ---------- */
+const LB_API_BASE = "";   // <-- set to your deployed leaderboard URL, e.g. "https://htq-lb.<you>.workers.dev"
+const LB_API=(new URLSearchParams(location.search).get("api")||LB_API_BASE).replace(/\/$/,"");
+const BOARD="penalty";
+async function lbSubmit(name,score){
+  const k="lb_"+BOARD, loc=JSON.parse(localStorage.getItem(k)||"[]");
+  loc.push({name,score,ts:Date.now()}); loc.sort((a,b)=>b.score-a.score||a.ts-b.ts);
+  localStorage.setItem(k,JSON.stringify(loc.slice(0,50)));
+  if(LB_API){ try{ await fetch(LB_API+"/scores",{method:"POST",headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({board:BOARD,name,score})}); }catch(e){} }
+}
+async function lbTop(n){
+  if(LB_API){ try{ const r=await fetch(LB_API+"/scores?board="+BOARD+"&top="+n);
+    if(r.ok) return await r.json(); }catch(e){} }
+  return JSON.parse(localStorage.getItem("lb_"+BOARD)||"[]").slice(0,n);
+}
+
+/* ---------- 3-direction oracle = the goalkeeper's "mind reading" ---------- */
+function makeOracle3(maxOrder){
+  maxOrder=maxOrder||4;
+  const tables=[...Array(maxOrder+1)].map(()=>new Map());
+  let hist=[]; const key=a=>a.join(",");
+  return {
+    predict(){
+      for(let k=maxOrder;k>=1;k--){
+        if(hist.length<k) continue;
+        const t=tables[k].get(key(hist.slice(-k)));
+        if(t){const m=Math.max(...t); if(t.filter(x=>x===m).length===1) return t.indexOf(m);}
+      }
+      return Math.floor(Math.random()*3);
+    },
+    update(mv){
+      for(let k=1;k<=maxOrder;k++){
+        if(hist.length>=k){const c=key(hist.slice(-k)); if(!tables[k].has(c))tables[k].set(c,[0,0,0]); tables[k].get(c)[mv]++;}
+      }
+      hist.push(mv);
+    }
+  };
+}
+
+const TOTAL=10, LEFT={0:"17%",1:"50%",2:"83%"};
+let oracle, shot, goals, saves, busy, armed, motionOn=false, lastMe=-1;
+
+function reset(){
+  oracle=makeOracle3(4); shot=0; goals=0; saves=0; busy=false; armed=false;
+  $("goals").textContent=0; $("saves").textContent=0; $("shotn").textContent="Schuss 1 / "+TOTAL;
+  $("qbtn").classList.remove("armed");
+  $("overlay").classList.remove("show"); $("gift").classList.remove("show");
+  setKeeper(1); resetBall();
+  $("hint").textContent="Wähle eine Ecke – oder wische / kippe das Handy. Der Torhüter errät dein Muster!";
+}
+function setKeeper(zone){ const k=$("keeper"); k.style.left=LEFT[zone]; k.style.transform="translateX(-50%)"; }
+function resetBall(){ const b=$("ball"); b.style.transition="none"; b.style.left="50%"; b.style.bottom="7%"; b.style.opacity="1";
+  void b.offsetWidth; b.style.transition=""; }
+
+function flash(txt,cls){ const f=$("flash"); f.textContent=txt; f.className="flash "+cls+" show";
+  setTimeout(()=>f.classList.remove("show"),700); }
+
+function normalShot(dir){
+  if(busy) return; busy=true;
+  const dive=oracle.predict();           // keeper guesses BEFORE the ball is struck
+  const saved=(dive===dir);
+  setKeeper(dive);
+  const b=$("ball"); b.style.left=LEFT[dir]; b.style.bottom="58%";
+  oracle.update(dir); lastMe=-1;
+  setTimeout(()=>finish(saved),520);
+}
+function quantumShot(){
+  if(busy) return; busy=true;
+  const dive=oracle.predict(); setKeeper(dive);
+  // ball in superposition of LEFT(0) and RIGHT(2)
+  const gL=$("ghostL"), gR=$("ghostR"), b=$("ball");
+  b.style.opacity="0";
+  for(const [g,z] of [[gL,"17%"],[gR,"83%"]]){ g.style.left=z; g.style.bottom="58%"; g.style.opacity=".7"; }
+  setTimeout(()=>{
+    // measurement: collapse 50/50 to one wing (true randomness)
+    const collapse=(crypto.getRandomValues(new Uint8Array(1))[0]&1)?2:0;
+    gL.style.opacity="0"; gR.style.opacity="0";
+    b.style.transition="none"; b.style.left=LEFT[collapse]; b.style.bottom="58%"; void b.offsetWidth;
+    b.style.transition=""; b.style.opacity="1";
+    const saved=(dive===collapse);     // goal unless keeper happened to dive to the collapsed wing
+    oracle.update(collapse);
+    setTimeout(()=>finish(saved,true),260);
+  },420);
+}
+function finish(saved,quantum){
+  shot++;
+  if(saved){ saves++; $("saves").textContent=saves; flash("PARADE","save"); }
+  else { goals++; $("goals").textContent=goals; flash("TOR!","goal"); }
+  if(navigator.vibrate) navigator.vibrate(saved?[20,40,20]:50);
+  $("hint").textContent = quantum ? "Quantenschuss: der Ball war an zwei Orten – erst die Messung entscheidet!"
+    : (saved? "Erwischt! Der Torhüter hat dein Muster gelesen." : "Tor! Du warst nicht vorhersehbar.");
+  if(shot>=TOTAL){ setTimeout(end,800); return; }
+  $("shotn").textContent="Schuss "+(shot+1)+" / "+TOTAL;
+  $("qbtn").classList.remove("armed"); armed=false;
+  setTimeout(()=>{ resetBall(); busy=false; },650);
+}
+
+async function end(){
+  $("endScore").textContent=goals+" Tore von "+TOTAL;
+  let msg;
+  if(goals<=4) msg="Der Torhüter ist eine KI – er erkennt Muster blitzschnell. Schwer zu überlisten! Nur wer <b>unvorhersehbar</b> schiesst (oder den <b>Quantenschuss</b> nutzt), trifft.";
+  else if(goals<=7) msg="Stark! Du warst ziemlich zufällig. Genau das braucht ein guter Schütze – und moderne Technik braucht echten Zufall (Quanten-Physik).";
+  else { msg="Weltklasse! Du warst zufälliger als fast alle Menschen – fast wie ein Quanten-Zufallsgenerator. 🏆"; $("gift").classList.add("show"); }
+  $("endMsg").innerHTML=msg;
+  $("overlay").classList.add("show");
+  renderLB();
+}
+async function renderLB(){
+  const top=await lbTop(10);
+  $("lb").innerHTML=top.map((r,i)=>`<div class="row${(r.name===lastName&&r.score===goals)?' me':''}">`+
+    `<span>${i+1}. ${escapeHtml(r.name)}</span><span>${r.score}</span></div>`).join("")||
+    '<div class="row"><span>Noch keine Einträge</span><span></span></div>';
+}
+let lastName="";
+function escapeHtml(s){return (s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
+
+/* ---------- inputs ---------- */
+document.querySelectorAll(".pill").forEach(p=>p.addEventListener("click",()=>{
+  const d=+p.dataset.d; if(armed && d!==1){ quantumShot(); } else normalShot(d);
+}));
+$("qbtn").addEventListener("click",()=>{ if(busy)return; quantumShot(); });
+$("again").addEventListener("click",reset);
+$("submit").addEventListener("click",async()=>{
+  const n=($("name").value||"Anonym").trim().slice(0,12)||"Anonym"; lastName=n;
+  await lbSubmit(n,goals); $("namebox").style.display="none"; renderLB();
+});
+
+/* keyboard (stand laptop) */
+document.addEventListener("keydown",e=>{
+  if(e.key==="ArrowLeft")normalShot(0); else if(e.key==="ArrowUp")normalShot(1);
+  else if(e.key==="ArrowRight")normalShot(2); else if(e.key===" "){e.preventDefault();quantumShot();}
+});
+/* swipe */
+let sx=null,sy=null;
+$("pitch").addEventListener("touchstart",e=>{sx=e.changedTouches[0].clientX;sy=e.changedTouches[0].clientY;},{passive:true});
+$("pitch").addEventListener("touchend",e=>{
+  if(sx===null)return; const dx=e.changedTouches[0].clientX-sx, dy=e.changedTouches[0].clientY-sy; sx=null;
+  if(Math.abs(dx)<30&&Math.abs(dy)<30)return;
+  if(dy<-40&&Math.abs(dx)<40) normalShot(1); else normalShot(dx>0?2:0);
+},{passive:true});
+/* motion: flick the phone, tilt decides the corner */
+$("motionBtn").addEventListener("click",async()=>{
+  try{
+    if(typeof DeviceMotionEvent!=="undefined" && DeviceMotionEvent.requestPermission){
+      const p=await DeviceMotionEvent.requestPermission(); if(p!=="granted"){$("hint").textContent="Bewegung nicht erlaubt – nutze die Knöpfe.";return;}
+    }
+    if(motionOn){$("hint").textContent="Bewegung ist schon aktiv – kippe und schwinge das Handy.";return;}
+    motionOn=true; $("motionBtn").textContent="📱 aktiv";
+    let cool=0;
+    window.addEventListener("devicemotion",ev=>{
+      const a=ev.acceleration||{}; const mag=Math.abs(a.x||0)+Math.abs(a.y||0)+Math.abs(a.z||0);
+      const t=Date.now(); if(mag>22 && t-cool>900 && !busy){ cool=t;
+        const g=ev.rotationRate?ev.rotationRate.beta:0; // not reliable everywhere; fall back to accel x
+        const dir=(a.x||0)<-3?0:((a.x||0)>3?2:1);
+        if(armed)quantumShot(); else normalShot(dir);
+      }
+    });
+    $("hint").textContent="Schwing das Handy wie einen Schuss – kippe für die Richtung!";
+  }catch(e){ $("hint").textContent="Bewegung nicht verfügbar – nutze die Knöpfe."; }
+});
+
+reset();
+</script>
+</body>
+</html>

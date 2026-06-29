@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hack the Quantum · Nacht der Technik</title>
+<style>
+  :root{--bg1:#0a1733;--bg2:#061f3d;--ink:#eef3fb;--dim:#9fb2cc;--teal:#34d3b0;
+    --green:#2ecc71;--gold:#d6a328;--blue:#3a86ff;--violet:#9b6dff;}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{margin:0;font-family:Arial,Helvetica,sans-serif;color:var(--ink);
+    background:radial-gradient(120% 120% at 50% 0%,var(--bg2),var(--bg1));
+    min-height:100dvh;display:flex;flex-direction:column;align-items:center;
+    padding:env(safe-area-inset-top) 16px env(safe-area-inset-bottom);}
+  header{max-width:560px;text-align:center;padding:26px 0 10px}
+  h1{margin:0;font-size:clamp(28px,8vw,46px)}
+  h1 .q{color:var(--teal)}
+  .sub{color:var(--dim);font-size:clamp(14px,4vw,17px);margin-top:8px;line-height:1.5}
+  .grid{width:100%;max-width:560px;display:flex;flex-direction:column;gap:14px;margin:18px 0}
+  a.tile{display:flex;align-items:center;gap:14px;text-decoration:none;color:#04243f;
+    border-radius:18px;padding:18px;font-weight:800;box-shadow:0 6px 18px rgba(0,0,0,.25)}
+  a.tile .em{font-size:34px;line-height:1;flex:0 0 auto}
+  a.tile .tt{font-size:clamp(18px,5vw,22px)}
+  a.tile .dd{display:block;font-weight:600;font-size:13px;opacity:.85;margin-top:3px}
+  .t0{background:linear-gradient(135deg,#a8f0c0,#1f8f4e)}
+  .t1{background:linear-gradient(135deg,#7ff0d6,var(--teal))}
+  .t2{background:linear-gradient(135deg,#9be7a8,var(--green))}
+  .t3{background:linear-gradient(135deg,#cdd6ff,var(--violet))}
+  .t4{background:linear-gradient(135deg,#bfe0ff,var(--blue))}
+  .ext{margin-left:auto;font-size:13px;font-weight:700;opacity:.7}
+  .foot{color:var(--dim);font-size:13px;text-align:center;max-width:520px;line-height:1.5;padding:8px 0 20px}
+</style>
+</head>
+<body>
+  <header>
+    <h1>Hack the <span class="q">Quantum</span></h1>
+    <div class="sub">Wie aus Licht ein Bit wird – und warum Zufall die Technik der Zukunft antreibt.
+      Wähle ein Spiel:</div>
+  </header>
+
+  <div class="grid">
+    <a class="tile t0" href="quantum-penalty.html">
+      <span class="em">⚽</span>
+      <span><span class="tt">Quanten-Elfmeter</span>
+        <span class="dd">Schiess am KI-Torhüter vorbei – oder nimm den Quantenschuss!</span></span>
+    </a>
+    <a class="tile t1" href="beat-the-ai.html">
+      <span class="em">🤖</span>
+      <span><span class="tt">Schlag die KI</span>
+        <span class="dd">Kannst du zufälliger sein als eine künstliche Intelligenz?</span></span>
+    </a>
+    <a class="tile t2" href="hack-the-light.html">
+      <span class="em">🔦</span>
+      <span><span class="tt">Hack the Light</span>
+        <span class="dd">Mach aus Licht ein Bit – mit der Handy-Kamera.</span></span>
+    </a>
+    <a class="tile t3" href="https://q-chess.com" target="_blank" rel="noopener">
+      <span class="em">♟️</span>
+      <span><span class="tt">Quanten-Schach</span>
+        <span class="dd">Schach, aber Figuren können an zwei Orten gleichzeitig sein.</span></span>
+      <span class="ext">↗</span>
+    </a>
+    <a class="tile t4" href="https://tiqtaqtoe.com" target="_blank" rel="noopener">
+      <span class="em">⭕</span>
+      <span><span class="tt">Quanten-Tic-Tac-Toe</span>
+        <span class="dd">Drei gewinnt – mit Überlagerung und Verschränkung.</span></span>
+      <span class="ext">↗</span>
+    </a>
+  </div>
+
+  <div class="foot">
+    Nacht der Technik 2026 · TechLab · ZHAW School of Engineering · Institut InIT<br>
+    Pavel Sulimov &amp; Claude Lehmann<br>
+    <a href="prize.html" style="color:#5b6b85;font-size:11px">Standteam: Quanten-Geschenk</a>
+  </div>
+</body>
+</html>

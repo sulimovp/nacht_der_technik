@@ -1,72 +1,68 @@
 # TODO — Hack the Quantum @ Nacht der Technik 2026
 
 > Master checklist. **P** = Pavel, **CL** = Claude Lehmann, **AI** = can be done with the agent.
-> Guiding rule: *minimal effort, maximal outcome.* Do the 🟢 "must-haves" first; 🔵 are
-> nice-to-haves; ⚪ are stretch ideas. Event day: **Fri 3 July 2026**.
+> Event day: **Fri 3 July 2026**, 18:00–22:00 (TechLab). Setup from 12:00, done by 17:15.
+> The digital build is essentially done — what's left is **deploy, test, print, and stand logistics.**
 
-## 0. Admin & deadlines (cheap, don't forget) 🟢
+## 0. Admin & deadlines (cheap emails, don't forget) 🟢
 
 - [ ] Email events.engineering@zhaw.ch with **stand staff names** (Pavel + Claude L.) for catering — *(P)*
-- [ ] Confirm **PSP-number persons** report by **Mon 6 July 2026**; log event hours by end July — *(P)*
-- [ ] Ask organizer the open questions in `NOTES.md` (screen/connector, sockets, Wi-Fi) — *(P)*
-- [ ] Confirm Service Center **poster print cost + lead time** → set our print deadline — *(P)*
+- [ ] Ask organizer the open questions in `NOTES.md`: provided screen + connector (HDMI?), number of
+      power sockets, guest Wi-Fi — *(P)*
+- [ ] Confirm Service Center **poster print cost + lead time** → set the print deadline — *(P)*
+- [ ] Report **PSP-number persons** by **Mon 6 July 2026**; log event hours by end July — *(P)*
 
-## 1. The hero: Arduino → screen demo 🟢
+## 1. Deploy & test the games (digital — only P can do) 🟢
 
-This is the single most important milestone. Get an end-to-end working demo on Pavel's own kit early.
+Games live in the **Arraxis site**: `triangulo-site/frontend/nachtdertechnik/` (5 games + landing).
+Leaderboard is built into the **Arraxis Flask backend** (`/api/ndt/scores`, same-origin — no separate
+service, no `LB_API_BASE` to set). Reachable at **https://arraxis.com/nachtdertechnik/**.
 
-- [ ] Flash `arduino/hack_the_quantum/hack_the_quantum.ino` to the UNO — *(P, AI to help debug)*
-- [ ] Wire per the pin map in the sketch header (LDR divider, RGB LED, piezo, 2 buttons) — *(P)*
-- [ ] Run `software/quantum_ui/quantum_ui.py`, confirm serial connection + live bar + big 0/1 — *(P/AI)*
-- [ ] **Calibrate Level 1 threshold** to the room's actual light (auto-calibrate routine in sketch) — *(P)*
-- [ ] **Tune Level 2 parity** so big brightness changes sometimes don't flip the bit (feels "sneaky") — *(P/AI)*
-- [ ] **Tune Level 3 entropy** (sample count N, debiasing) so success ≈ 50% even with steady light — *(P/AI)*
-- [ ] Test the "feel": does a real person experience control dropping across levels? — *(P+CL)*
-- [ ] Robustness: survives unplug/replug, sticky hands, mashed buttons; auto-recovers — *(P/AI)*
+- [ ] Review + commit the Arraxis edits (`backend/app.py`, `backend/database.py`, `frontend/nachtdertechnik/`) — *(P)*
+- [ ] **Deploy** the site so `/nachtdertechnik/` is live over **HTTPS** (needed for the camera game) — *(P)*
+- [ ] Test all 3 custom games on a real **iPhone (Safari) + Android (Chrome)**:
+      Quanten-Elfmeter (buttons/swipe/motion, quantum shot, leaderboard), Schlag die KI, Hack the Light
+      (camera permission + venue lighting + the no-camera demo fallback) — *(P+CL)*
+- [ ] Confirm the **leaderboard** writes/reads across devices (boards: penalty, beat-ai, light) — *(P)*
+- [ ] Check the external games are live + decide offline handling if no Wi-Fi: **q-chess.com**,
+      **tiqtaqtoe.com** — *(P)*
+- [ ] Edit the `PRIZES` list in `prize.html` to match the sweets actually in the box — *(P/AI)*
+- [ ] Decide kiosk/fullscreen on the stand laptop/tablet so kids can't wander off the page — *(P)*
 
-## 2. Second activity: browser quantum games 🟢
+## 2. Physical / on-site 🟢
 
-Zero build — absorbs the queue and gives a 2-player option.
+- [ ] **Print the poster** (`poster/Hack_the_Quantum_Poster_DE.pdf`, A1 portrait) via the Service
+      Center — mind the lead time; make sure the site is deployed before the event so the QR works — *(P)*
+- [ ] **Print the A3 sign** (`poster/A3_Anleitung_DE.pdf`) for the A3 stand — *(P)*
+- [ ] **Buy sweets** for the "Quanten-Geschenk" box — *(P)*
+- [ ] **Pack:** stand laptop + charger, a **tablet** for the camera game, phone/tablet **stand**,
+      **HDMI cable** for the provided screen, power strip, tape, hand sanitiser/wipes — *(P)*
+- [ ] Bring a printed copy of this TODO + the deploy URL — *(P)*
+- [ ] **Setup rehearsal:** assemble the full stand once before the event — *(P+CL)*
+- [ ] **Event day:** build 12:00–17:15 · staff 18:00–22:00 · teardown after 22:00 — *(P+CL)*
 
-- [ ] Pick 2 games from `docs/ideas-backlog.md` §A (default: **Quantum Flytrap photon game** as the
-      on-theme headline + **Quantum Tic-Tac-Toe** as the 2-player pick-up; Q-Chess for older visitors) — *(P+CL)*
-- [ ] Verify each chosen game is **live** (links rot — many are old hackathon prototypes) and works
-      **offline** if there's no guest Wi-Fi; keep a downloaded HTML fallback — *(P)*
-- [ ] Make a 1-page "how to play" card (German, kid-simple) for the screen corner — *(AI)*
-- [ ] Decide browser kiosk/fullscreen setup so kids can't wander off the page — *(P/AI)*
+## 3. Optional fallback: Arduino physical demo ⚪
 
-## 3. Poster (must use MINT template, German, child-simple) 🟢
+Not needed — everything runs without it. Bring only if we want a physical exhibit too.
+Code drafted in `arduino/` + `software/quantum_ui/` (untested on hardware).
 
-- [ ] Confirm portrait vs landscape (poster wall = portrait likely) — *(P)*
-- [ ] Fill the MINT template from `docs/poster-plan.md` content using the `pptx` skill — *(AI)*
-- [ ] Keep it jargon-free; add the big "🟢🟡🔵 control drops" visual — *(AI)*
-- [ ] Internal review for CD compliance + readability from 2 m — *(P+CL)*
-- [ ] Send to print with enough lead time before 3 July — *(P)*
+- [ ] (Optional) Flash the sketch, wire per the pin map, calibrate the 3 modes on Pavel's kit — *(P)*
 
-## 4. Stand build & logistics 🔵
+## 4. Nice-to-have polish ⚪
 
-- [ ] A3 stand: short "How to play" + safety/hygiene note (German) — *(AI draft, P print)*
-- [ ] Pack list: laptop + charger, UNO + USB cable, breadboard (pre-wired + spare), spare LDR/LED/
-      wires, monitor cable (HDMI?), power strip, tape, cable ties, hand sanitiser/wipes — *(P)*
-- [ ] **Pre-wire and hot-glue** the breadboard at home so setup on-site is plug-and-play — *(P)*
-- [ ] Bring a printed copy of the pin map + this TODO — *(P)*
-- [ ] Setup rehearsal: full stand assembled once before the event — *(P+CL)*
-
-## 5. Polish / engagement 🔵
-
-- [ ] Sound on/off toggle (a beeping stand for 4 h can get old) — *(AI)*
-- [ ] "High score" / streak display to pull kids in — *(AI)*
-- [ ] Simple attract-mode animation when idle — *(AI)*
-- [ ] Optional bilingual (DE/EN) screen text — *(AI)* — pending decision in `NOTES.md`
-
-## 6. Stretch ideas (only if time) ⚪
-
-See `docs/ideas-backlog.md` for the full backlog (multi-sensor entropy, human-vs-AI prediction,
-live entropy meter, two-player Arduino mode, takeaway "your random number" slip).
+- [ ] Sound on/off toggle in the games (optional) — *(AI)*
+- [ ] Idle/attract animation on the stand screen — *(AI)*
+- [ ] Bilingual (DE/EN) toggle — pending decision in `NOTES.md` — *(AI)*
+- [ ] More backlog ideas in `docs/ideas-backlog.md`.
 
 ## Status snapshot
 
 - ✅ Repo organized; concept + facts + notes committed.
-- ✅ Arduino sketch + Python UI **first drafts** written (untested on hardware).
-- ✅ Poster content outline drafted (`docs/poster-plan.md`).
-- ⏭️ **Next critical step:** flash + wire + test the end-to-end demo on Pavel's kit (section 1).
+- ✅ **5 web games built & themed to Arraxis**, in `triangulo-site/frontend/nachtdertechnik/`
+  (Quanten-Elfmeter, Schlag die KI, Hack the Light, + links to Quanten-Schach & Tic-Tac-Toe), plus the
+  `prize.html` Quanten-Geschenk draw.
+- ✅ **Leaderboard** (best score + attempts) wired into the Arraxis Flask backend.
+- ✅ **Tests pass:** 22 Node/jsdom + 6 pytest.
+- ✅ **Poster** (`poster/Hack_the_Quantum_Poster_DE.pdf`) + **A3 sign** (`poster/A3_Anleitung_DE.pdf`),
+  with real QR, game icons, quantum motifs, Arraxis + Quantum Lab logos, LinkedIn contact QRs.
+- ⏭️ **Next:** deploy the Arraxis site (HTTPS) → test on phones → print poster + A3 → sweets + gear → rehearse.

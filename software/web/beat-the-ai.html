@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Schlag die KI! · Hack the Quantum</title>
+<style>
+  :root{
+    --bg1:#0a1733; --bg2:#061f3d; --teal:#34d3b0; --navy:#05366c;
+    --win:#2ecc71; --lose:#ff5a5a; --ink:#eef3fb; --dim:#9fb2cc;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;height:100%}
+  body{
+    font-family:Arial,Helvetica,sans-serif;color:var(--ink);
+    background:radial-gradient(120% 120% at 50% 0%,var(--bg2),var(--bg1));
+    min-height:100dvh;display:flex;flex-direction:column;align-items:center;
+    padding:env(safe-area-inset-top) 16px env(safe-area-inset-bottom);overflow:hidden;
+  }
+  header{width:100%;max-width:540px;text-align:center;padding:18px 0 6px}
+  h1{margin:0;font-size:clamp(24px,7vw,40px);letter-spacing:.5px}
+  h1 .q{color:var(--teal)}
+  .sub{color:var(--dim);font-size:clamp(13px,3.6vw,16px);margin-top:6px;line-height:1.45}
+  .score{width:100%;max-width:540px;display:flex;gap:10px;margin:14px 0 6px}
+  .card{flex:1;background:rgba(255,255,255,.06);border-radius:16px;padding:12px 8px;text-align:center}
+  .card b{display:block;font-size:13px;color:var(--dim);font-weight:700;text-transform:uppercase;letter-spacing:.6px}
+  .card .n{font-size:clamp(30px,10vw,46px);font-weight:800;line-height:1.05;margin-top:2px}
+  .ai .n{color:var(--lose)} .you .n{color:var(--win)}
+  .round{color:var(--dim);font-size:14px;margin:2px 0 8px}
+  .stage{
+    width:100%;max-width:540px;flex:1;min-height:0;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;position:relative;
+  }
+  .verdict{font-size:clamp(20px,6vw,28px);font-weight:800;min-height:1.4em;text-align:center;transition:.15s}
+  .verdict.win{color:var(--win)} .verdict.lose{color:var(--lose)}
+  .hint{color:var(--dim);font-size:14px;margin-top:6px;text-align:center}
+  .pad{width:100%;max-width:540px;display:flex;gap:14px;padding:14px 0 22px}
+  .btn{
+    flex:1;border:none;border-radius:22px;padding:30px 8px;font-size:clamp(20px,6vw,26px);
+    font-weight:800;color:#04243f;cursor:pointer;touch-action:manipulation;
+    background:linear-gradient(180deg,#7ff0d6,var(--teal));box-shadow:0 8px 0 #1f9b80;
+    transition:transform .05s,box-shadow .05s;
+  }
+  .btn:active{transform:translateY(6px);box-shadow:0 2px 0 #1f9b80}
+  .btn .em{display:block;font-size:34px;line-height:1}
+  /* end screen */
+  .overlay{
+    position:fixed;inset:0;background:rgba(4,12,28,.94);display:none;
+    flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;z-index:5;
+  }
+  .overlay.show{display:flex}
+  .overlay h2{font-size:clamp(26px,8vw,40px);margin:0 0 6px}
+  .overlay p{color:var(--ink);font-size:clamp(15px,4.4vw,19px);max-width:460px;line-height:1.5}
+  .overlay .big{font-size:clamp(40px,13vw,64px);font-weight:800;margin:6px 0}
+  .again{margin-top:18px;border:none;border-radius:18px;background:var(--teal);color:#04243f;
+    font-weight:800;font-size:20px;padding:16px 30px;cursor:pointer}
+  .foot{color:var(--dim);font-size:12px;padding:6px 0 10px;text-align:center}
+  a{color:var(--teal)}
+</style>
+</head>
+<body>
+  <a href="index.html" style="position:fixed;top:calc(env(safe-area-inset-top) + 8px);left:10px;z-index:10;background:rgba(255,255,255,.12);color:#eef3fb;border-radius:12px;padding:8px 12px;font-weight:700;font-size:14px;text-decoration:none">‹ Menü</a>
+  <header>
+    <h1>Schlag die <span class="q">KI</span>!</h1>
+    <div class="sub">Tippe immer wieder <b>LINKS</b> oder <b>RECHTS</b> – ganz wie du willst.<br>
+      Die KI rät jedes Mal deinen nächsten Tipp. <b>Trickse sie aus!</b></div>
+  </header>
+
+  <div class="score">
+    <div class="card ai"><b>KI</b><div class="n" id="aiScore">0</div></div>
+    <div class="card you"><b>Du</b><div class="n" id="youScore">0</div></div>
+  </div>
+  <div class="round" id="round">Runde 1 von 25</div>
+
+  <div class="stage" id="stage">
+    <div class="verdict" id="verdict">Bereit?</div>
+    <div class="hint" id="hint">Tippe einen Knopf · oder wische / Pfeiltasten</div>
+  </div>
+
+  <div class="pad">
+    <button class="btn" id="bL"><span class="em">⟵</span>LINKS</button>
+    <button class="btn" id="bR"><span class="em">⟶</span>RECHTS</button>
+  </div>
+  <div class="foot">Hack the Quantum · Nacht der Technik · ZHAW Institut InIT</div>
+
+  <div class="overlay" id="overlay">
+    <h2 id="endTitle"></h2>
+    <div class="big" id="endScore"></div>
+    <p id="endMsg"></p>
+    <button class="again" id="again">Nochmal spielen</button>
+  </div>
+
+<script>
+"use strict";
+/* ---- Aaronson-style oracle: predict next 0/1 from recent player history ---- */
+function makeOracle(maxOrder){
+  maxOrder=maxOrder||4;
+  const tables=[...Array(maxOrder+1)].map(()=>new Map());
+  let hist="";
+  return {
+    predict(){
+      for(let k=maxOrder;k>=1;k--){
+        if(hist.length<k) continue;
+        const ctx=hist.slice(-k), t=tables[k].get(ctx);
+        if(t&&(t[0]+t[1])>0&&t[0]!==t[1]) return t[0]>t[1]?0:1;
+      }
+      return Math.random()<0.5?0:1;
+    },
+    update(move){
+      for(let k=1;k<=maxOrder;k++){
+        if(hist.length>=k){
+          const ctx=hist.slice(-k);
+          if(!tables[k].has(ctx)) tables[k].set(ctx,[0,0]);
+          tables[k].get(ctx)[move]++;
+        }
+      }
+      hist+=move;
+    }
+  };
+}
+
+const TOTAL=25;
+let oracle, round, ai, you, busy, pending;
+const $=id=>document.getElementById(id);
+
+function reset(){
+  oracle=makeOracle(4); round=0; ai=0; you=0; busy=false;
+  pending=oracle.predict();          // AI commits its guess BEFORE you tap
+  $("aiScore").textContent=0; $("youScore").textContent=0;
+  $("verdict").textContent="Bereit?"; $("verdict").className="verdict";
+  $("hint").textContent="Tippe einen Knopf · oder wische / Pfeiltasten";
+  $("round").textContent="Runde 1 von "+TOTAL;
+  $("overlay").classList.remove("show");
+}
+
+function play(move){            // move: 0 = LINKS, 1 = RECHTS
+  if(busy) return; busy=true;
+  const guess=pending;
+  const caught=(guess===move);  // AI predicted correctly?
+  if(caught){ ai++; } else { you++; }
+  round++;
+  $("aiScore").textContent=ai; $("youScore").textContent=you;
+  const v=$("verdict");
+  if(caught){ v.textContent="KI hat dich erkannt!"; v.className="verdict lose"; }
+  else      { v.textContent="Ausgetrickst! 🎉";     v.className="verdict win";  }
+  $("hint").textContent = "KI tippte: "+(guess?"RECHTS":"LINKS");
+  oracle.update(move);
+  pending=oracle.predict();
+
+  if(round>=TOTAL){ setTimeout(end,650); return; }
+  $("round").textContent="Runde "+(round+1)+" von "+TOTAL;
+  setTimeout(()=>{ busy=false; }, 330);
+}
+
+function end(){
+  const o=$("overlay");
+  let title,msg;
+  const best=Math.max(0, +(localStorage.getItem("htq_best")||0));
+  if(you>best) localStorage.setItem("htq_best", you);
+  if(ai>you){
+    title="Die KI gewinnt 🤖";
+    msg="Die KI hat dein Muster geknackt. Menschen sind erstaunlich schlechte Zufalls-Erzeuger – wir wiederholen uns ständig. Nur <b>echter Zufall</b> schlägt die Vorhersage. Genau deshalb braucht moderne Technik (Sicherheit, KI, Quanten) Zufall aus der <b>Physik</b>.";
+  } else if(you>ai){
+    title="Du gewinnst! 🎉";
+    msg="Stark – du warst zufälliger als fast alle Menschen! Das ist richtig schwer: Versuch mal, eine Münze im Kopf zu werfen. Computer und Quanten-Physik können das viel besser – darum nutzt man sie für echten Zufall.";
+  } else {
+    title="Unentschieden!";
+    msg="Knapp! Schon ein bisschen Muster genügt der KI zum Raten. Perfekter Zufall ist für Menschen fast unmöglich – dafür gibt es die Quanten-Physik.";
+  }
+  $("endTitle").textContent=title;
+  $("endScore").textContent="KI "+ai+" : "+you+" Du";
+  $("endMsg").innerHTML=msg+'<br><br><span style="color:#9fb2cc;font-size:14px">Dein bester Wert: '+Math.max(you,best)+" / "+TOTAL+"</span>";
+  o.classList.add("show");
+}
+
+/* ---- inputs: buttons, keys, swipe ---- */
+$("bL").addEventListener("click",()=>play(0));
+$("bR").addEventListener("click",()=>play(1));
+$("again").addEventListener("click",reset);
+document.addEventListener("keydown",e=>{
+  if(e.key==="ArrowLeft") play(0);
+  else if(e.key==="ArrowRight") play(1);
+});
+let sx=null;
+const stage=document.body;
+stage.addEventListener("touchstart",e=>{ sx=e.changedTouches[0].clientX; },{passive:true});
+stage.addEventListener("touchend",e=>{
+  if(sx===null) return;
+  const dx=e.changedTouches[0].clientX-sx; sx=null;
+  if(Math.abs(dx)>45) play(dx>0?1:0);
+},{passive:true});
+
+reset();
+</script>
+</body>
+</html>

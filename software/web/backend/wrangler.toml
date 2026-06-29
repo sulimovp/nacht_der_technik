@@ -1,0 +1,9 @@
+name = "htq-leaderboard"
+main = "leaderboard-worker.js"
+compatibility_date = "2024-11-01"
+
+# Create the namespace once with:  wrangler kv namespace create LB
+# then paste the printed id below.
+[[kv_namespaces]]
+binding = "LB"
+id = "PASTE_YOUR_KV_NAMESPACE_ID_HERE"

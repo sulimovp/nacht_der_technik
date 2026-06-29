@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Hack the Light · Aus Licht wird ein Bit</title>
+<style>
+  :root{
+    --bg1:#0a1733;--bg2:#061f3d;--ink:#eef3fb;--dim:#9fb2cc;
+    --green:#2ecc71;--gold:#d6a328;--blue:#3a86ff;--win:#2ecc71;--lose:#ff5a5a;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;height:100%}
+  body{font-family:Arial,Helvetica,sans-serif;color:var(--ink);
+    background:radial-gradient(120% 120% at 50% 0%,var(--bg2),var(--bg1));
+    min-height:100dvh;display:flex;flex-direction:column;align-items:center;
+    padding:env(safe-area-inset-top) 14px env(safe-area-inset-bottom);}
+  header{width:100%;max-width:560px;text-align:center;padding:14px 0 4px}
+  h1{margin:0;font-size:clamp(22px,6.5vw,36px)}
+  h1 .q{color:var(--green)}
+  .sub{color:var(--dim);font-size:clamp(12px,3.4vw,15px);margin-top:5px;line-height:1.4}
+  .tabs{display:flex;gap:8px;width:100%;max-width:560px;margin:12px 0 8px}
+  .tab{flex:1;border:none;border-radius:14px;padding:12px 4px;font-weight:800;font-size:14px;
+    color:#04243f;cursor:pointer;opacity:.55;transition:.15s;line-height:1.15}
+  .tab small{display:block;font-weight:700;font-size:11px;opacity:.85}
+  .tab.m1{background:var(--green)} .tab.m2{background:var(--gold)} .tab.m3{background:var(--blue)}
+  .tab.active{opacity:1;transform:translateY(-2px)}
+  .rule{width:100%;max-width:560px;text-align:center;font-size:14px;color:var(--ink);
+    background:rgba(255,255,255,.06);border-radius:12px;padding:10px;min-height:42px}
+  .main{width:100%;max-width:560px;display:flex;gap:14px;align-items:center;margin:12px 0}
+  .left{flex:0 0 42%;text-align:center}
+  #preview{width:100%;border-radius:14px;background:#000;aspect-ratio:4/3;object-fit:cover}
+  .bar{height:14px;border-radius:8px;background:rgba(255,255,255,.12);margin-top:8px;overflow:hidden}
+  .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#1b3,#cf6)}
+  .barlbl{font-size:11px;color:var(--dim);margin-top:4px}
+  .right{flex:1;text-align:center}
+  .bit{font-size:clamp(80px,30vw,150px);font-weight:800;line-height:1}
+  .bit.win{color:var(--win)} .bit.lose{color:var(--lose)}
+  .target{font-size:14px;color:var(--dim);margin-top:2px}
+  .controls{width:100%;max-width:560px;display:flex;gap:10px;margin-top:4px}
+  .seg{flex:1;display:flex;background:rgba(255,255,255,.08);border-radius:14px;overflow:hidden}
+  .seg button{flex:1;border:none;background:transparent;color:var(--ink);font-weight:800;font-size:18px;padding:14px;cursor:pointer}
+  .seg button.on{background:var(--green);color:#04243f}
+  .measure{flex:1;border:none;border-radius:14px;background:linear-gradient(180deg,#7ff0d6,#34d3b0);
+    color:#04243f;font-weight:800;font-size:18px;padding:14px;cursor:pointer;box-shadow:0 6px 0 #1f9b80}
+  .measure:active{transform:translateY(4px);box-shadow:0 2px 0 #1f9b80}
+  .stat{width:100%;max-width:560px;display:flex;justify-content:space-between;color:var(--dim);
+    font-size:14px;margin:12px 0 4px}
+  .summary{width:100%;max-width:560px;display:flex;gap:8px;margin-bottom:8px}
+  .sc{flex:1;text-align:center;border-radius:12px;padding:8px 4px;background:rgba(255,255,255,.06);font-size:13px}
+  .sc b{display:block;font-size:18px;margin-top:2px}
+  .foot{color:var(--dim);font-size:12px;padding:6px 0 12px;text-align:center}
+  .note{width:100%;max-width:560px;text-align:center;color:var(--gold);font-size:13px;margin:6px 0;min-height:18px}
+  .startbtn{border:none;border-radius:14px;background:var(--green);color:#04243f;font-weight:800;
+    font-size:17px;padding:14px 22px;margin-top:6px;cursor:pointer}
+</style>
+</head>
+<body>
+  <a href="index.html" style="position:fixed;top:calc(env(safe-area-inset-top) + 8px);left:10px;z-index:10;background:rgba(255,255,255,.12);color:#eef3fb;border-radius:12px;padding:8px 12px;font-weight:700;font-size:14px;text-decoration:none">‹ Menü</a>
+  <header>
+    <h1>Hack the <span class="q">Light</span></h1>
+    <div class="sub">Mach Licht auf die Kamera – und versuche, das Ergebnis <b>0</b> oder <b>1</b> zu erzwingen.
+      Von Runde zu Runde wird es schwerer!</div>
+  </header>
+
+  <div class="tabs">
+    <button class="tab m1 active" data-m="1">Hell / Dunkel<small>Du steuerst</small></button>
+    <button class="tab m2" data-m="2">Versteckte Regel<small>tricky</small></button>
+    <button class="tab m3" data-m="3">Zufall<small>unmöglich</small></button>
+  </div>
+  <div class="rule" id="rule"></div>
+
+  <div class="main">
+    <div class="left">
+      <video id="preview" playsinline muted></video>
+      <div class="bar"><i id="barFill"></i></div>
+      <div class="barlbl">Helligkeit</div>
+    </div>
+    <div class="right">
+      <div class="bit" id="bit">–</div>
+      <div class="target">Dein Ziel: <b id="tgt">1</b></div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <div class="seg">
+      <button id="t0">Ziel 0</button><button id="t1" class="on">Ziel 1</button>
+    </div>
+    <button class="measure" id="measure">Messen</button>
+  </div>
+
+  <div class="stat">
+    <span id="tries">Versuch 0 / 10</span>
+    <span id="hits">Treffer: 0</span>
+  </div>
+  <div class="summary">
+    <div class="sc">Hell/Dunkel<b id="s1">–</b></div>
+    <div class="sc">Versteckt<b id="s2">–</b></div>
+    <div class="sc">Zufall<b id="s3">–</b></div>
+  </div>
+
+  <div class="note" id="note"></div>
+  <div class="foot">Hack the Quantum · ZHAW Institut InIT</div>
+
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const RULES={
+ 1:"Modus 1 – Hell oder dunkel: Hell = 1, dunkel = 0. Direkt steuerbar.",
+ 2:"Modus 2 – Versteckte Regel: Nur ein winziges Detail der Helligkeit zählt. Grosse Änderungen helfen oft nicht.",
+ 3:"Modus 3 – Zufall: Die Kamera mischt winzige Bildrauschen. Selbst bei ruhigem Licht praktisch unvorhersagbar."
+};
+let mode=1, target=1, tries=0, hits=0, threshold=0.45, norm=0;
+let camOK=false, simLevel=0.5;
+const summary={1:null,2:null,3:null};
+
+/* ---- camera ---- */
+const video=$("preview");
+const canvas=document.createElement("canvas"); canvas.width=64; canvas.height=48;
+const cx=canvas.getContext("2d",{willReadFrequently:true});
+
+async function initCam(){
+  try{
+    const stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:"environment"}});
+    video.srcObject=stream; await video.play(); camOK=true; $("note").textContent="";
+    autoCalibrate(1200);                       // adapts mode-1 threshold to the room's light
+  }catch(e){
+    camOK=false;
+    $("note").innerHTML='Keine Kamera erlaubt. <span id="demo" style="text-decoration:underline;cursor:pointer">Demo ohne Kamera starten</span>';
+    const d=$("demo"); if(d) d.onclick=()=>{camOK="sim"; $("note").textContent="Demo-Modus (ohne Kamera)."; autoCalibrate(700);};
+  }
+}
+function autoCalibrate(delay){
+  // Mode 1 = "brighter than the room right now -> 1". The room's light varies (evening, crowd,
+  // venue lamps), so we sample the ambient level once at start and set the threshold just above it.
+  // No button needed — it just happens.
+  setTimeout(()=>{
+    let s=0,n=0; const iv=setInterval(()=>{ s+=norm; n++;
+      if(n>=15){ clearInterval(iv);
+        threshold=Math.min(0.85,Math.max(0.12,s/n+0.12));
+        $("note").textContent="Bereit! Heller machen = 1, dunkler = 0.";
+        setTimeout(()=>{ if($("note").textContent.startsWith("Bereit")) $("note").textContent=""; },2500);
+      }
+    },60);
+  }, delay||1000);
+}
+function sampleNorm(){
+  if(camOK===true && video.readyState>=2){
+    cx.drawImage(video,0,0,canvas.width,canvas.height);
+    const d=cx.getImageData(0,0,canvas.width,canvas.height).data;
+    let s=0; for(let i=0;i<d.length;i+=4) s+=0.299*d[i]+0.587*d[i+1]+0.114*d[i+2];
+    return s/(d.length/4)/255;
+  }
+  // simulation: brightness follows a slow target + noise (for laptops w/o camera)
+  simLevel+=(Math.random()-0.5)*0.04; simLevel=Math.min(1,Math.max(0,simLevel));
+  return Math.min(1,Math.max(0,simLevel+(Math.random()-0.5)*0.02));
+}
+function rawBytes(){
+  // per-pixel luma bytes for entropy mode; falls back to noise in sim
+  if(camOK===true && video.readyState>=2){
+    cx.drawImage(video,0,0,canvas.width,canvas.height);
+    return cx.getImageData(0,0,canvas.width,canvas.height).data;
+  }
+  const n=canvas.width*canvas.height*4, a=new Uint8ClampedArray(n);
+  for(let i=0;i<n;i++) a[i]=Math.floor(Math.random()*256);
+  return a;
+}
+
+/* ---- the three encoders ---- */
+function encodeBit(){
+  if(mode===1){ return norm>threshold?1:0; }                 // deterministic
+  if(mode===2){ return Math.round(norm*64)&1; }              // hidden parity
+  // mode 3: XOR many pixel LSBs + Von Neumann debias  -> ~50/50
+  let b=0; const d=rawBytes();
+  for(let i=0;i<d.length;i+=4){ b^=(d[i]&1)^(d[i+1]&1)^(d[i+2]&1); }
+  let a0=d[8]&1, a1=d[24]&1, guard=0;
+  while(a0===a1 && guard<8){ a0=d[(8+guard*16)%d.length]&1; a1=d[(24+guard*16)%d.length]&1; guard++; }
+  return (b ^ a0)&1;
+}
+
+/* ---- live preview loop ---- */
+function loop(){
+  norm=sampleNorm();
+  $("barFill").style.width=Math.round(norm*100)+"%";
+  requestAnimationFrame(loop);
+}
+
+/* ---- gameplay ---- */
+function setMode(m){
+  mode=m; tries=0; hits=0;
+  document.querySelectorAll(".tab").forEach(t=>t.classList.toggle("active",+t.dataset.m===m));
+  $("rule").textContent=RULES[m];
+  $("tries").textContent="Versuch 0 / 10"; $("hits").textContent="Treffer: 0";
+  $("bit").textContent="–"; $("bit").className="bit";
+}
+function setTarget(t){
+  target=t; $("tgt").textContent=t;
+  $("t0").classList.toggle("on",t===0); $("t1").classList.toggle("on",t===1);
+}
+function measure(){
+  const bit=encodeBit();
+  const hit=(bit===target);
+  tries++; if(hit) hits++;
+  if(navigator.vibrate) navigator.vibrate(hit?40:[30,40,30]);
+  const b=$("bit"); b.textContent=bit; b.className="bit "+(hit?"win":"lose");
+  $("tries").textContent="Versuch "+tries+" / 10";
+  $("hits").textContent="Treffer: "+hits;
+  if(tries>=10){
+    summary[mode]=hits; $("s"+mode).textContent=hits+"/10";
+    const msg={1:"Stark steuerbar – wie erwartet!",
+               2:"Schwerer, oder? Die Regel ist versteckt.",
+               3:"Etwa 50/50 – das ist echter Zufall. Genau so etwas braucht moderne Technik (KI, Sicherheit, Quanten)."}[mode];
+    $("note").textContent=msg;
+    tries=0; hits=0;
+    setTimeout(()=>{ $("tries").textContent="Versuch 0 / 10"; $("hits").textContent="Treffer: 0"; },1200);
+  }
+}
+
+/* ---- wire up ---- */
+document.querySelectorAll(".tab").forEach(t=>t.addEventListener("click",()=>setMode(+t.dataset.m)));
+$("t0").addEventListener("click",()=>setTarget(0));
+$("t1").addEventListener("click",()=>setTarget(1));
+$("measure").addEventListener("click",measure);
+setMode(1); setTarget(1); loop(); initCam();
+</script>
+</body>
+</html>

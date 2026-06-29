@@ -35,14 +35,54 @@ Kit) + a screen with free browser quantum games.
   build), to absorb the queue. Shortlist in `docs/ideas-backlog.md`.
 - **2026-06-21** — Starter Arduino sketch + Python UI skeleton drafted (need to flash & test on
   Pavel's real kit).
+- **2026-06-28** — **Pivot to an all-software stand (no Arduino needed).** Stand = four browser
+  games: **Quanten-Schach** (q-chess.com) + **Quanten-Tic-Tac-Toe** (tiqtaqtoe.com) + our own
+  **Schlag die KI** (swipe/guess; teaches "humans are predictable, only true randomness wins") +
+  **Hack the Light** (phone camera → bit, the no-Arduino version of the original 3-mode experiment).
+  Our two games are self-contained mobile web pages in `software/web/`, deployed static to
+  arraxis.com, opened via a **QR on the poster**. Arduino is now an **optional fallback**, not the hero.
+- **2026-06-28** — Deployment: static (no backend) on arraxis.com; players use their **own phones**.
+  Camera game needs **HTTPS** (has a no-camera demo fallback).
+- **2026-06-28** — Added **Quanten-Elfmeter** (World-Cup tie-in): a penalty shootout where the
+  goalkeeper is the same AI predictor (reads your pattern) + a **Quantenschuss** (superpose two
+  corners; measurement collapses 50/50). Controls: buttons + swipe + motion-flick. Lesson = same as
+  Schlag die KI (randomness beats prediction) plus superposition/measurement.
+- **2026-06-28** — Leaderboard = **shared online** (`software/web/backend/`: Cloudflare Worker
+  recommended, plain Node alternative), with a **localStorage fallback** so nothing breaks offline.
+  Used by Quanten-Elfmeter (board `penalty`). Must set `LB_API_BASE` in the game after deploying.
+- **2026-06-28** — **Quanten-Geschenk** prize page (`prize.html`): true-random (crypto) draw, staff
+  triggers it for top players → they take a sweet from the box. Prize list editable in the file.
+- **2026-06-28** — UX fixes: added a **"‹ Menü"** return button to our own games; **removed the
+  manual "Kalibrieren"** in Hack the Light — it now **auto-calibrates** the mode-1 threshold on start.
+- **2026-06-28** — **Load is a non-issue:** all our games are 100% client-side (each phone runs its
+  own copy). The only shared piece is the leaderboard endpoint (a Worker handles far more than a
+  kids' stand), and it degrades to a local board if unreachable.
+- **2026-06-29** — **Games moved into the Arraxis website** (`triangulo-site`, Flask) and deploy at
+  **https://arraxis.com/nachtdertechnik/**. Canonical source is now
+  `triangulo-site/frontend/nachtdertechnik/` (the earlier `software/web/` copies are the dev origin).
+  Added **Quanten-Elfmeter** as a 5th game. Styling matched to Arraxis (Inter, dark pink/teal theme,
+  site nav/footer on the landing).
+- **2026-06-29** — **Leaderboard now in every custom game** (boards `penalty`, `beat-ai`, `light`),
+  backed by the **Arraxis Flask backend** (`/api/ndt/scores`, new `ndt_scores` table). Keeps each
+  player's **best score + attempt count** (fixes the "score didn't update on retry" bug); name saved
+  on the device, auto-submits on each replay; local fallback if offline. Cloudflare Worker is no
+  longer needed (kept in `software/web/backend/` only as an alternative).
+- **2026-06-29** — Penalty **motion control** reworked into a clear on/off toggle ("Bewegung: Aus/Ein")
+  that fully removes the listener when off.
+- **2026-06-29** — **Tests added:** 22 Node/jsdom (logic, encoders, leaderboard client, DOM flows) +
+  6 pytest (leaderboard API). Run: `node --test` in the games folder; `pytest tests/test_ndt_leaderboard.py`.
+- **2026-06-29** — **Poster refactored** to feature all 5 games + a real **QR** to
+  arraxis.com/nachtdertechnik (`poster/Hack_the_Quantum_Poster_DE.pptx/.pdf`, `poster/qr_nachtdertechnik.png`).
 
 ## Open questions (need an answer)
 
 - [ ] Screen: use the provided one or bring our own monitor? What connector (HDMI)? Cable length?
 - [ ] How many power sockets are actually at the stand?
-- [ ] Guest Wi-Fi for browser games, or must everything run offline/local?
+- [ ] Guest Wi-Fi for browser games, or must everything run offline/local? (our games also run
+      offline from the laptop; external chess/ttt need internet unless we cache them)
 - [ ] Service Center poster print cost + lead time → set the print deadline.
-- [ ] Do we want bilingual (DE/EN) screen text, or German only?
+- [ ] Confirm arraxis.com serves **HTTPS** (needed for the camera game) + final deploy URL for the QR.
+- [ ] Replace the poster's placeholder QR with the real arraxis.com link.
 
 ## Pointers
 
