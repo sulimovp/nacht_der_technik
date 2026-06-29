@@ -21,6 +21,7 @@ hook for *why randomness matters for AI, security and quantum tech.* Motto: **Cr
 | `docs/concept.md` | The exhibit concept |
 | `docs/ideas-backlog.md` | Browser quantum games, polish, fallbacks, stretch ideas |
 | `docs/poster-plan.md` | German poster content for the MINT template |
+| `docs/guide/` | **Staff prep guide (EN+DE):** quantum basics, per-game principles/rules/scripts, cheat-sheet |
 | `arduino/hack_the_quantum/` | UNO firmware — 3-mode light→bit encoder |
 | `software/quantum_ui/` | Python screen UI (has a `--sim` mode to test without hardware) |
 | `reference/organizer/` | Organizer factsheet + floor plan (source of truth) |
