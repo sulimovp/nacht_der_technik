@@ -73,6 +73,15 @@ Kit) + a screen with free browser quantum games.
   6 pytest (leaderboard API). Run: `node --test` in the games folder; `pytest tests/test_ndt_leaderboard.py`.
 - **2026-06-29** — **Poster refactored** to feature all 5 games + a real **QR** to
   arraxis.com/nachtdertechnik (`poster/Hack_the_Quantum_Poster_DE.pptx/.pdf`, `poster/qr_nachtdertechnik.png`).
+- **2026-07-01** — Big feature batch on the Arraxis games:
+  - **Mobile fixes** (penalty glove/ball depth + responsive sizing; motion = tilt-to-aim + shake-to-shoot; landing nav overlap).
+  - **Quanten-Geschenk award system:** device id + `ndt_awards` table; rule = 1 sweet first-play + 1 for top-3, **max 2/device**, redeemed tracked (re-entry safe); medals 🥇🥈🥉 + tie-break; `prize.html` draws a **Lindt Lindor** flavour; games show a 🎁 button when unlocked; **admin panel** (list/delete/reset) at /admin. 6 new pytest pass.
+  - **Penalty upgrades:** pre-game **team (flags) + role** pick (⚽ Schiessen / 🧤 Halten, same mechanic).
+  - **Hack the Light:** clearer target ("Mach eine 0/1") + explicit "heller = eher 1" tip.
+  - **Quantum-World slider** (`quantum-world.html`): 9 animated slides, Prev/Next + fullscreen, linked from landing.
+  - **German i18n** added to the Arraxis site (backend + `i18n.js` allow `de`; per-key **English fallback**; `de.json` covers nav/footer/hero; deeper content falls back to English).
+  - **Operating manual** (`docs/guide/operating-manual.md`) + physical-experiment idea + bilingual glossary + print PDFs.
+  - ⚠️ Sandbox mount truncates freshly-edited large files, so penalty/beat-ai/hack-light/htq-lb JS could only be edited (not re-run) here — **test on a real phone after deploy.**
 
 ## Open questions (need an answer)
 
